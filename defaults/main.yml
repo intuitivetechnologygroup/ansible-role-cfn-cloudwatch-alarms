@@ -1,0 +1,5 @@
+cw_alarms_build_dir: "{{ playbook_dir }}/build"
+cw_alarms_template_dir: "{{ cw_alarms_build_dir }}"
+cw_alarms_template_name: "{{ cw_alarms_stack_name }}.json"
+cw_alarms_stack_state: present
+cw_alarms_region: "{{ region | default('us-west-2') }}"

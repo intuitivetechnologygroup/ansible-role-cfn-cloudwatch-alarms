@@ -1,0 +1,6 @@
+- include: per_alarm_actions.yml
+- include: per_alarm_actions.yml cw_alarms_stack_state=absent
+- include: per_stack_actions.yml
+- include: per_stack_actions.yml cw_alarms_stack_state=absent
+- include: per_stack_and_alarm_actions.yml
+- include: per_stack_and_alarm_actions.yml cw_alarms_stack_state=absent

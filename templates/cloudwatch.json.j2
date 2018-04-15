@@ -1,0 +1,60 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Resources" : {
+    {% for alarm in cw_alarms %}
+    "{{ alarm.name }}": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "AlarmDescription": "{{ alarm.description | default('') }}",
+        "Namespace": "{{ alarm.namespace }}",
+        "MetricName": "{{ alarm.metric }}",
+        "Dimensions": [
+        {% for dimension in alarm.dimensions %}
+          {
+            "Name": "{{ dimension.name }}",
+            "Value" : "{{ dimension.value }}"
+          }
+        {% if not loop.last %}, {% endif %}
+        {% endfor %}
+        ],
+        "Statistic": "{{ alarm.statistic }}",
+        "Period": "{{ alarm.period_length }}",
+        "EvaluationPeriods": "{{ alarm.eval_periods }}",
+        "Threshold": "{{ alarm.threshold }}",
+        "ComparisonOperator": "{{ alarm.comparison_operator }}"
+        {% if alarm.unit is defined %}
+        ,
+        "Unit" : "{{ alarm.unit }}"
+        {% endif %}
+        {% if alarm.actions is defined or cw_alarms_stack_actions is defined  %}
+         ,
+        "AlarmActions": [
+          {% if alarm.actions is defined %}
+          {% for arn in alarm.actions %}
+            "{{ arn }}"
+          {% if not loop.last %}, {% endif %}
+          {% endfor %}
+          {% if cw_alarms_stack_actions is defined %},{% endif %}
+          {% endif %}
+          {% if cw_alarms_stack_actions is defined %}
+          {% for arn in cw_alarms_stack_actions %}
+            "{{ arn }}"
+          {% if not loop.last %}, {% endif %}
+          {% endfor %}
+          {% endif %}
+        ]
+        {% endif %}
+        {% if alarm.insufficient_data_actions is defined %}
+        ,
+        "InsufficientDataActions": [
+          {% for action_arn in alarm.insufficient_data_actions %}
+            {{ action_arn }}
+          {% endfor %}
+        ]
+        {% endif %}
+      }
+    }
+    {% if not loop.last %}, {% endif %}
+    {% endfor %}
+  }
+}
